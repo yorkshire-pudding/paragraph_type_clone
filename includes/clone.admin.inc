@@ -226,10 +226,10 @@ function paragraphs_type_clone_create(array $values) {
   $bundle = new stdClass();
   $bundle->bundle = $values['target_machine_name'];
   $bundle->locked = 1;
-  $bundle->name = trim($values['target_name']);
-  $bundle->allow_unpublish = $values['target_allow_unpublish'];
-  $bundle->label = empty($values['target_label']) ? $bundle->name : trim($values['target_label']);
-  $bundle->description = trim($form_state['values']['description']);
+  $bundle->name = trim((string) $values['target_name']);
+  $bundle->allow_unpublish = (int) $values['target_allow_unpublish'];
+  $bundle->label = (empty($values['target_label'])) ? $bundle->name : trim($values['target_label']);
+  $bundle->description = trim((string) $values['target_description']);
 
   // Save the paragraph type.
   paragraphs_bundle_save($bundle);
@@ -258,12 +258,14 @@ function paragraphs_type_clone_create(array $values) {
 
   // Create new groups.
   if (module_exists('field_group')) {
-    $groups = field_group_info_groups('paragraph', $values['source_machine_name'], NULL, TRUE);
-    foreach ($groups['form'] as $group) {
-      $group->bundle = $values['target_machine_name'];
-      field_group_group_save($group, $new = TRUE);
+    $groups = field_group_info_groups('paragraphs_item', $values['source_machine_name'], NULL, TRUE);
+    if (isset($groups['form'])) {
+      foreach ($groups['form'] as $group) {
+        $group->bundle = $values['target_machine_name'];
+        field_group_group_save($group, $new = TRUE);
+      }
     }
-  }
+   }
 
   // Define batch operation.
   $batch = array(

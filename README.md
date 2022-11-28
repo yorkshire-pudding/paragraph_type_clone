@@ -6,7 +6,7 @@ to a new type if the fields required are the same or almost the same.
 
 The name, machine name, label, description and whether or not the paragraphs
 can be unpublished from the admin interface are all configurable, whereas field
-instances are copied exactly.
+instances and field groups (if applicable) are copied exactly.
 
 ## Requirements
 This module requires that the following module is also enabled:

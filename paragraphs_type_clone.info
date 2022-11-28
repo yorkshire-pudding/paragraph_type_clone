@@ -1,5 +1,5 @@
 name = Paragraphs Type Clone
-description = Allows cloning of paragraph types via a simple link in the paragraph type configure form.
+description = Allows cloning of paragraph types via a link in the paragraph type configure form.
 backdrop = 1.x
 type = module
 
