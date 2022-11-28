@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Paragraphs Type Clone primary module file.
+ */
+
+/**
+ * Implements hook_form_FORM_ID_alter
+ * Modifies the Paragraph Type Configure form to add a clone link
+ */
+function paragraphs_type_clone_form_paragraphs_admin_bundle_form_alter(&$form, &$form_state, $form_id) {
+
+    // Get the bundle (paragraph type) object from the form.
+    $bundle = $form['#paragraphs_bundle'];
+
+    // Only show the link when editing a paragraph type, not when creating one.
+    if (isset($bundle) && (!empty($bundle->bundle))) {
+      // Convert underscores (_) to dashes (-) in machine name for URL.
+      $type_url_str = strtr($bundle->bundle, array('_' => '-'));
+      // Compile the markup for the link.
+      $link_markup = 
+        '<ul class="action-links">'
+        . '<li>'
+            . '<a href="/admin/structure/paragraphs/' . $type_url_str . '/clone">'
+            . t('Clone Paragraph Type')
+          . '</a>'
+        . '</li>'
+      . '</ul>';
+      // Create the link item.
+      $form['clone_link'] = array(
+        '#type' => 'item',
+        '#markup' => $link_markup,
+        '#weight' => -50,
+      );
+    }
+}
+
+/**
+ * Implements hook_menu().
+ * 
+ * Creates the menu callback link so that the existing paragraph type can be
+ * passed to the clone form. 
+ */
+function paragraphs_type_clone_menu() {
+  $items['admin/structure/paragraphs/%/clone'] = array(
+    'title' => 'Clone Paragraphs type',
+    'access arguments' => array('administer paragraph types'),
+    'page callback' => 'backdrop_get_form',
+    'page arguments' => array('paragraphs_type_clone_create_form', 3),
+    'file' => 'includes/clone.admin.inc',
+    'type' => MENU_VISIBLE_IN_BREADCRUMB,
+  );
+
+  return $items;
+}

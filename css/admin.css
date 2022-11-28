@@ -1,11 +1,11 @@
-.ctc-readonly {
+/**
+ * @file
+ * Paragraphs Type Clone CSS file.
+ * 
+ * Adds a background color to read-only fields on the form so appearances match
+ * the field behavior.
+ */
+
+.ptc-readonly {
   background-color: #f1f1f1 !important;
-}
-
-.token-tree {
-  margin-left: 0px;
-}
-
-.token-tree caption {
-  text-align: left;
 }

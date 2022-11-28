@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Content Type Clone cloning functions.
+ * Paragraph Type Clone cloning functions.
  */
 
 /**
@@ -13,147 +13,119 @@
  * @param array $form_state
  *   Reference to the form state array.
  * @param string $machine_name
- *   The machine name of the source content type.
+ *   The machine name of the source paragraph type.
  */
-function content_type_clone_create_form(array $form, array &$form_state, $machine_name) {
-  // Load the node type from machine name.
-  $node_type = node_type_load($machine_name);
-
-  // Prepare the new node type machine name prefix.
-  $node_type_prefix = $node_type->type . '_clone';
-
-  // Get the next occurrence count.
-  $num = content_type_clone_get_next_type_number($node_type_prefix);
+function paragraphs_type_clone_create_form(array $form, array &$form_state, $machine_name) {
+  // Load the paragraph type from machine name.
+  $paragraph_type = paragraphs_bundle_load($machine_name);
+  // Prepare the new paragraph type machine name prefix.
+  $paragraph_type_prefix = $paragraph_type->bundle . '_clone';
+  // Get the next occurrence count to use in the names.
+  $num = paragraphs_type_clone_get_next_type_number($paragraph_type_prefix);
 
   // Source fieldset.
-  $form['fieldset_1'] = array(
+  $form['fieldset_source'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Content type source'),
+    '#title' => t('Paragraph type source'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-
-  // Source node type name field.
-  $form['fieldset_1']['source_name'] = array(
+  // Source paragraph type name field.
+  $form['fieldset_source']['source_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
-    '#default_value' => $node_type->name,
+    '#default_value' => $paragraph_type->name,
     '#required' => TRUE,
     '#attributes' => array(
       'readonly' => 'readonly',
-      'class' => array('ctc-readonly'),
+      'class' => array('ptc-readonly'),
     ),
   );
-
-  // Source node type machine name field.
-  $form['fieldset_1']['source_machine_name'] = array(
+  // Source paragraph type machine name field.
+  $form['fieldset_source']['source_machine_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Machine name'),
-    '#default_value' => $node_type->type,
+    '#default_value' => $paragraph_type->bundle,
     '#required' => TRUE,
     '#attributes' => array(
       'readonly' => 'readonly',
-      'class' => array('ctc-readonly'),
+      'class' => array('ptc-readonly'),
     ),
   );
-
-  // Source node type description field.
-  $form['fieldset_1']['source_description'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Description'),
-    '#default_value' => $node_type->description,
+  // Source paragraph type label field.
+  $form['fieldset_source']['source_label'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Label'),
+    '#default_value' => $paragraph_type->label,
+    '#required' => FALSE,
     '#attributes' => array(
       'readonly' => 'readonly',
-      'class' => array('ctc-readonly'),
+      'class' => array('ptc-readonly'),
+    ),
+  );
+  // Source paragraph type description field.
+  $form['fieldset_source']['source_description'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Description'),
+    '#default_value' => $paragraph_type->description,
+    '#attributes' => array(
+      'readonly' => 'readonly',
+      'class' => array('ptc-readonly'),
+    ),
+  );
+  // Source paragraph type allow_unpublish field.
+  $form['fieldset_source']['source_allow_unpublish'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow unpublishing from the admin interface'),
+    '#default_value' => $paragraph_type->allow_unpublish,
+    '#disabled' => TRUE,
+    '#attributes' => array(
+      'class' => array('ptc-readonly'),
     ),
   );
 
   // Target fieldset.
-  $form['fieldset_2'] = array(
+  $form['fieldset_target'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Content type target'),
+    '#title' => t('Paragraph type target'),
     '#collapsible' => FALSE,
     '#collapsed' => FALSE,
   );
-
-  // Target node type name field.
-  $default_value = 'Clone of ' . $node_type->name . ' (' . $num . ')';
-  $form['fieldset_2']['target_name'] = array(
+  // Target paragraph type name field.
+  $default_value = 'Clone of ' . $paragraph_type->name . ' (' . $num . ')';
+  $form['fieldset_target']['target_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
     '#default_value' => $default_value,
     '#token' => FALSE,
     '#required' => TRUE,
   );
-
   // Target type machine name field.
-  $form['fieldset_2']['target_machine_name'] = array(
+  $form['fieldset_target']['target_machine_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Machine name'),
-    '#default_value' => $node_type_prefix . '_' . $num,
+    '#default_value' => $paragraph_type_prefix . '_' . $num,
     '#required' => TRUE,
   );
-
-  // Source node type description field.
-  $form['fieldset_2']['target_description'] = array(
+    // Target paragraph type label field.
+    $default_value = 'Clone of ' . $paragraph_type->label . ' (' . $num . ')';
+    $form['fieldset_target']['target_label'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Label'),
+      '#default_value' => $default_value,
+      '#required' => FALSE,
+    );
+  // Target paragraph type description field.
+  $form['fieldset_target']['target_description'] = array(
     '#type' => 'textarea',
     '#title' => t('Description'),
-    '#default_value' => t(
-      'Description of @name (@num)',
-      array(
-      '@name' => $node_type->name,
-      '@num' => $num,
-    )
-    ),
+    '#default_value' => $paragraph_type->description,
   );
-
-  // Clone parameters fieldset.
-  $form['fieldset_2']['clone_source_nodes'] = array(
+  // Target paragraph type allow_unpublish field.
+  $form['fieldset_target']['target_allow_unpublish'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Copy all nodes from the source content type to the target content type'),
-  );
-
-  // Delete parameters fieldset.
-  $form['fieldset_2']['delete_source_nodes'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Delete all nodes from the source content type after they have been copied to the target content type'),
-    '#states' => array(
-      'visible' => array(
-        ':input[name="clone_source_nodes"]' => array('checked' => TRUE),
-      ),
-    ),
-  );
-
-  // Token fieldset.
-  $form['fieldset_3'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Replacement patterns'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="clone_source_nodes"]' => array('checked' => TRUE),
-      ),
-    ),
-  );
-
-  // Token fields.
-  // Display the node title pattern field.
-  $default_value = t('Clone of @title', array('@title' => '[node:title]'));
-  $form['fieldset_3']['title_pattern'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Node title pattern'),
-    '#default_value' => $default_value,
-    '#token' => FALSE,
-    '#required' => TRUE,
-  );
-
-  // List available tokens.
-  $form['fieldset_3']['token_tree_link'] = array(
-    '#theme' => 'token_tree',
-    '#token_types' => array('node'),
-    '#global_types' => TRUE,
-    '#click_insert' => TRUE,
+    '#title' => t('Allow unpublishing from the admin interface'),
+    '#default_value' => $paragraph_type->allow_unpublish,
   );
 
   // Submit button.
@@ -163,9 +135,9 @@ function content_type_clone_create_form(array $form, array &$form_state, $machin
     '#value' => t('Generate'),
   );
 
-  // Attach the admin css file.
+  // Attach the admin css file so source fields can be styled to reflect read only.
   $form['#attached']['css'] = array(
-    backdrop_get_path('module', 'content_type_clone') . '/css/admin.css',
+    backdrop_get_path('module', 'paragraphs_type_clone') . '/css/admin.css',
   );
 
   // Return the form.
@@ -175,24 +147,24 @@ function content_type_clone_create_form(array $form, array &$form_state, $machin
 /**
  * Generate a default item number for a new clone.
  *
- * This function will add the clone number to the machine name, the title
- * and the description fields in the content type creation form.
+ * This function will add the clone number to the machine name and name
+ * in the paragraph type creation form.
  *
  * The clone number is based on the number of existing clones
- * for the content type being cloned.
+ * for the paragraph type being cloned.
  *
- * @param string $node_type_prefix
- *   The default prefix defined for the new content type.
+ * @param string $paragraph_type_prefix
+ *   The default prefix defined for the new paragraph type.
  */
-function content_type_clone_get_next_type_number($node_type_prefix) {
-  // Get node types.
-  $node_types = array_keys(node_type_get_types());
+function paragraphs_type_clone_get_next_type_number($paragraph_type_prefix) {
+  // Get paragraph types.
+  $paragraph_types = array_keys(paragraphs_bundle_load());
 
   // Prepare the search pattern.
-  $pattern = '/^' . $node_type_prefix . '/';
+  $pattern = '/^' . $paragraph_type_prefix . '/';
 
   // Count existing prefix occurrences.
-  $occurrences = count(preg_grep($pattern, $node_types));
+  $occurrences = count(preg_grep($pattern, $paragraph_types));
 
   // Return an incremented value.
   return $occurrences + 1;
@@ -206,18 +178,18 @@ function content_type_clone_get_next_type_number($node_type_prefix) {
  * @param array $form_state
  *   Reference to the form state array.
  */
-function content_type_clone_create_form_validate(array $form, array &$form_state) {
-  if ($form['#form_id'] == 'content_type_clone_create_form') {
-    // Get node types.
-    $node_types = array_keys(node_type_get_types());
+function paragraphs_type_clone_create_form_validate(array $form, array &$form_state) {
+  if ($form['#form_id'] == 'paragraphs_type_clone_create_form') {
+    // Get paragraph types.
+    $paragraph_types = array_keys(paragraphs_bundle_load());
 
     // If the machine name already exists.
-    if (in_array($form_state['values']['target_machine_name'], $node_types)) {
-      form_set_error('target_machine_name', t('The content type name provided already exists'));
+    if (in_array($form_state['values']['target_machine_name'], $paragraph_types)) {
+      form_set_error('target_machine_name', t('The paragraph type machine name provided already exists'));
     }
 
     // Add the custom form submit handler.
-    $form['#submit'][] = 'content_type_clone_create_form_submit';
+    $form['#submit'][] = 'paragraphs_type_clone_create_form_submit';
   }
 }
 
@@ -229,54 +201,47 @@ function content_type_clone_create_form_validate(array $form, array &$form_state
  * @param array $form_state
  *   Reference to the form state array.
  */
-function content_type_clone_create_form_submit(array $form, array &$form_state) {
-  if ($form['#form_id'] == 'content_type_clone_create_form') {
+function paragraphs_type_clone_create_form_submit(array $form, array &$form_state) {
+  if ($form['#form_id'] == 'paragraphs_type_clone_create_form') {
     // Reset counter for debug information.
     $_SESSION['http_request_count'] = 0;
 
     // Execute the function batch function.
-    $batch = content_type_clone_create($form_state['values']);
+    $batch = paragraphs_type_clone_create($form_state['values']);
     batch_set($batch);
   }
 }
 
 /**
- * Create a content type clone.
+ * Create a paragraph type clone.
  *
- * This function creates the new content type and adds the cloned fields.
+ * This function creates the new paragraph type and adds the cloned fields.
  *
  * @param array $values
- *   Form values coming from the content type creation form.
+ *   Form values coming from the paragraph type creation form.
  */
-function content_type_clone_create(array $values) {
-  // Create the type definition array.
-  $type = array(
-    'type' => $values['target_machine_name'],
-    'name' => $values['target_name'],
-    'base' => 'node_content',
-    'description' => $values['target_description'],
-    'custom' => 1,
-    'modified' => 1,
-    'locked' => 0,
-  );
+function paragraphs_type_clone_create(array $values) {
 
-  // Set the type defaults.
-  $type = node_type_set_defaults($type);
+  // Create the paragraph type object and populate from the form.
+  $bundle = new stdClass();
+  $bundle->bundle = $values['target_machine_name'];
+  $bundle->locked = 1;
+  $bundle->name = trim($values['target_name']);
+  $bundle->allow_unpublish = $values['target_allow_unpublish'];
+  $bundle->label = empty($values['target_label']) ? $bundle->name : trim($values['target_label']);
+  $bundle->description = trim($form_state['values']['description']);
 
-  // Save the ndoe type.
-  node_type_save($type);
-
-  // Add body field.
-  node_add_body_field($type);
+  // Save the paragraph type.
+  paragraphs_bundle_save($bundle);
 
   // Prepare the operations array.
   $operations = array();
 
-  // Get node type base fields.
-  $base_fields = field_info_instances('node', $values['source_machine_name']);
+  // Get paragraph type base fields.
+  $base_fields = field_info_instances('paragraphs_item', $values['source_machine_name']);
 
-  // Get node type extra fields.
-  $extra_fields = field_info_extra_fields('node', $values['source_machine_name'], 'form');
+  // Get paragraph type extra fields.
+  $extra_fields = field_info_extra_fields('paragraphs_item', $values['source_machine_name'], 'form');
 
   // Merge all fields.
   $all_fields = array_merge($base_fields, $extra_fields);
@@ -285,7 +250,7 @@ function content_type_clone_create(array $values) {
   foreach ($all_fields as $name => $instance) {
     if (isset($name) && !empty($name) && isset($instance['entity_type']) && !empty($instance['entity_type'])) {
       $operations[] = array(
-        'content_type_clone_set_target_field',
+        'paragraphs_type_clone_set_target_field',
         array($instance, $name, $values),
       );
     }
@@ -293,34 +258,19 @@ function content_type_clone_create(array $values) {
 
   // Create new groups.
   if (module_exists('field_group')) {
-    $groups = field_group_info_groups('node', $values['source_machine_name'], NULL, TRUE);
+    $groups = field_group_info_groups('paragraph', $values['source_machine_name'], NULL, TRUE);
     foreach ($groups['form'] as $group) {
       $group->bundle = $values['target_machine_name'];
       field_group_group_save($group, $new = TRUE);
     }
   }
 
-  // Also clone the nodes if requested.
-  if ((int) $values['clone_source_nodes'] == 1) {
-    // Load all nodes for the source content type.
-    $nids = content_type_clone_get_type_nids($values['source_machine_name']);
-
-    // Loop through each node.
-    foreach ($nids as $nid) {
-      // Add an operation.
-      $operations[] = array(
-        'content_type_clone_copy_node',
-        array($nid, $values),
-      );
-    }
-  }
-
   // Define batch operation.
   $batch = array(
-    'title' => t('Clone content type'),
+    'title' => t('Clone paragraph type'),
     'operations' => $operations,
-    'file' => backdrop_get_path('module', 'content_type_clone') . '/includes/clone.admin.inc',
-    'finished' => 'content_type_clone_finished',
+    'file' => backdrop_get_path('module', 'paragraphs_type_clone') . '/includes/clone.admin.inc',
+    'finished' => 'paragraphs_type_clone_finished',
     'init_message' => t('Operation in progress...'),
     'progress_message' => t('Task @current/@total'),
     'error_message' => t('An error has occurred please try again.'),
@@ -332,20 +282,20 @@ function content_type_clone_create(array $values) {
 /**
  * Create a field.
  *
- * This function creates a field for a cloned content type.
+ * This function creates a field for a cloned paragraph type.
  *
  * @param object $instance
- *   The newly created content type.
+ *   The newly created paragraph type.
  * @param string $field_name
- *   The name of the field in the source content type.
+ *   The name of the field in the source paragraph type.
  * @param array $values
- *   Form values coming from the content type creation form.
+ *   Form values coming from the paragraph type creation form.
  */
-function content_type_clone_set_target_field($instance, $field_name, array $values, array &$context) {
+function paragraphs_type_clone_set_target_field($instance, $field_name, array $values, array &$context) {
   // Progress context results.
   $context['results'][] = $field_name;
 
-  // Pass the cloned content type name to context.
+  // Pass the cloned paragraph type name to context.
   $context['results']['source_name'] = $values['source_name'];
 
   // Update the field count.
@@ -362,7 +312,7 @@ function content_type_clone_set_target_field($instance, $field_name, array $valu
   );
 
   // Verify the field does not already exist.
-  if (!_content_type_clone_exclude_field($field_name)) {
+  if (!_paragraphs_type_clone_exclude_field($field_name)) {
     // If field doesn't exist, create it.
     if (!field_info_field($field_name)) {
       if ($field = field_info_field($field_name)) {
@@ -370,7 +320,7 @@ function content_type_clone_set_target_field($instance, $field_name, array $valu
       }
     }
 
-    // Set the new bundle name.
+    // Set the new bundle (paragraph type) name.
     $instance['bundle'] = $values['target_machine_name'];
     $instance['field_name'] = $field_name;
 
@@ -379,7 +329,7 @@ function content_type_clone_set_target_field($instance, $field_name, array $valu
   }
 
   // Update progress.
-  _content_type_clone_update_http_requests();
+  _paragraphs_type_clone_update_http_requests();
 }
 
 /**
@@ -390,7 +340,7 @@ function content_type_clone_set_target_field($instance, $field_name, array $valu
  * @return bool
  *   Number of requests.
  */
-function _content_type_clone_exclude_field($field_name) {
+function _paragraphs_type_clone_exclude_field($field_name) {
   $exclude = array('title', 'body', 'metatags', 'locations');
   return in_array($field_name, $exclude);
 }
@@ -398,80 +348,8 @@ function _content_type_clone_exclude_field($field_name) {
 /**
  * Utility function to increment HTTP requests in a session variable.
  */
-function _content_type_clone_update_http_requests() {
+function _paragraphs_type_clone_update_http_requests() {
   $_SESSION['http_request_count']++;
-}
-
-/**
- * Get node ids by content type.
- *
- * This function returns all node ids for a given content type.
- *
- * @param string $type
- *   The content type.
- */
-function content_type_clone_get_type_nids($type) {
-  // Get all nids for the content type.
-  $nids = db_query('SELECT nid FROM {node} WHERE type =  :type',
-  array(
-    ':type' => $type,
-  ))->fetchCol();
-
-  // Return the results.
-  return $nids;
-}
-
-/**
- * Clone a node.
- *
- * This function copies a node from the
- * source content type to the target content type.
- *
- * @param object $node_id
- *   The id of the node to clone.
- * @param array $values
- *   Values from the content type clone form.
- * @param array $context
- *   The batch operations context.
- */
-function content_type_clone_copy_node($node_id, array $values, array &$context) {
-  // Load the node by id.
-  $source_node = node_load($node_id);
-
-  // Progress context results.
-  $context['results'][] = 'nid' . $source_node->nid;
-
-  // Update the node count.
-  (isset($context['results']['node_count'])) ? $context['results']['node_count']++ : $context['results']['node_count'] = 1;
-
-  // Progress context message.
-  $context['message'] = t('Cloning node @title',
-    array(
-    '@title' => $source_node->title,
-  )
-  );
-
-  // Copy the source node.
-  $target_node = $source_node->createDuplicate();
-
-  unset($target_node->path);
-
-  // Set target node type.
-  $target_node->type = $values['target_machine_name'];
-
-  // Set the target node title.
-  $target_node->title = token_replace($values['title_pattern'], array('node' => $target_node));
-
-  // Save the copy.
-  node_save($target_node);
-
-  // Delete the source node if required.
-  if ((int) $values['delete_source_nodes'] == 1) {
-    node_delete($source_node->nid);
-  }
-
-  // Update progress.
-  _content_type_clone_update_http_requests();
 }
 
 /**
@@ -480,7 +358,7 @@ function content_type_clone_copy_node($node_id, array $values, array &$context) 
  * @return int
  *   Number of requests.
  */
-function _content_type_clone_get_http_requests() {
+function _paragraphs_type_clone_get_http_requests() {
   return !empty($_SESSION['http_request_count']) ? $_SESSION['http_request_count'] : 0;
 }
 
@@ -496,12 +374,12 @@ function _content_type_clone_get_http_requests() {
  * @param array $operations
  *   The batch operations array.
  */
-function content_type_clone_finished($success, array $results, array $operations) {
+function paragraphs_type_clone_finished($success, array $results, array $operations) {
   // Test the results.
   if ($success) {
     backdrop_set_message(
       t(
-        'The "@source_name" content type and @field_count fields have been cloned successfully.',
+        'The "@source_name" paragraph type and @field_count fields have been cloned successfully.',
         array(
       '@source_name' => $results['source_name'],
       '@field_count' => $results['field_count'],
@@ -522,6 +400,6 @@ function content_type_clone_finished($success, array $results, array $operations
     );
   }
 
-  // Redirect to the content types list.
-  backdrop_goto('/admin/structure/types');
+  // Redirect to the paragraph types list.
+  backdrop_goto('/admin/structure/paragraphs');
 }
