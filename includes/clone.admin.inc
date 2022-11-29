@@ -305,6 +305,7 @@ function paragraphs_type_clone_set_target_field($instance, $field_name, array $v
 
   // Pass the cloned paragraph type name to context.
   $context['results']['source_name'] = $values['source_name'];
+  $context['results']['target_name'] = $values['target_name'];
 
   // Update the field count.
   if (!isset($context['results']['field_count'])) {
@@ -386,12 +387,12 @@ function paragraphs_type_clone_finished($success, array $results, array $operati
   // Test the results.
   if ($success) {
     backdrop_set_message(
-      t(
-        'The "@source_name" paragraph type and @field_count fields have been cloned successfully.',
+      t('The "@source_name" paragraph type and @field_count fields have been cloned successfully to "@target_name".',
         array(
-      '@source_name' => $results['source_name'],
-      '@field_count' => $results['field_count'],
-    )
+          '@source_name' => $results['source_name'],
+          '@target_name' => $results['target_name'],
+          '@field_count' => $results['field_count'],
+        )
       )
     );
   }
