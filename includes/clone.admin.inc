@@ -107,14 +107,14 @@ function paragraphs_type_clone_create_form(array $form, array &$form_state, $mac
     '#default_value' => $paragraph_type_prefix . '_' . $num,
     '#required' => TRUE,
   );
-    // Target paragraph type label field.
-    $default_value = 'Clone of ' . $paragraph_type->label . ' (' . $num . ')';
-    $form['fieldset_target']['target_label'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Label'),
-      '#default_value' => $default_value,
-      '#required' => FALSE,
-    );
+  // Target paragraph type label field.
+  $default_value = 'Clone of ' . $paragraph_type->label . ' (' . $num . ')';
+  $form['fieldset_target']['target_label'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Label'),
+    '#default_value' => $default_value,
+    '#required' => FALSE,
+  );
   // Target paragraph type description field.
   $form['fieldset_target']['target_description'] = array(
     '#type' => 'textarea',
@@ -346,6 +346,7 @@ function paragraphs_type_clone_set_target_field($instance, $field_name, array $v
  *
  * @param string $field_name
  *   The field name.
+ * 
  * @return bool
  *   Number of requests.
  */
@@ -399,12 +400,11 @@ function paragraphs_type_clone_finished($success, array $results, array $operati
   else {
     $error_operation = reset($operations);
     backdrop_set_message(
-      t(
-        'An error occurred while processing @operation with arguments : @args',
+      t('An error occurred while processing @operation with arguments : @args',
         array(
-      '@operation' => $error_operation[0],
-      '@args' => print_r($error_operation[0], TRUE),
-    )
+          '@operation' => $error_operation[0],
+          '@args' => print_r($error_operation[0], TRUE),
+        )
       )
     );
   }
