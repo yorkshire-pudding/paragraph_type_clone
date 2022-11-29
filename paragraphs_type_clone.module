@@ -45,7 +45,7 @@ function paragraphs_type_clone_form_paragraphs_admin_bundle_form_alter(&$form, &
 function paragraphs_type_clone_menu() {
   $items['admin/structure/paragraphs/%/clone'] = array(
     'title' => 'Clone Paragraphs type',
-    'access arguments' => array('administer paragraph types'),
+    'access arguments' => array('administer paragraphs bundles'),
     'page callback' => 'backdrop_get_form',
     'page arguments' => array('paragraphs_type_clone_create_form', 3),
     'file' => 'includes/clone.admin.inc',

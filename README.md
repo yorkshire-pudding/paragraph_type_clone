@@ -8,10 +8,21 @@ The name, machine name, label, description and whether or not the paragraphs
 can be unpublished from the admin interface are all configurable, whereas field
 instances and field groups (if applicable) are copied exactly.
 
+The module is based on Content Type Clone but has a few differences:
+- As the name says, this clones paragraph types and not content types which
+requires a slightly different form and process to work.
+- Node copying is deliberately not included as paragraphs are always within nodes.
+- Field groups for all display modes are copied, not just field groups for the
+form.
+- Instead of rebuilding the paragraph types overview list, a link is placed in
+the Configure screen when editing an existing paragraph type. 
+
 ## Requirements
 This module requires that the following module is also enabled:
 
 - [Paragraphs](https://github.com/backdrop-contrib/paragraphs)
+
+While not required, this module supports the Field Group module and will copy all field groups to the new content type.
 
 ## Installation
 - Install this module using the [official Backdrop CMS instructions](https://backdropcms.org/guide/modules).

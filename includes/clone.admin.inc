@@ -256,16 +256,22 @@ function paragraphs_type_clone_create(array $values) {
     }
   }
 
-  // Create new groups.
+  // Check if the Fields Group module is installed.
   if (module_exists('field_group')) {
+    // Get the groups from the form view and all display view modes.
     $groups = field_group_info_groups('paragraphs_item', $values['source_machine_name'], NULL, TRUE);
-    if (isset($groups['form'])) {
-      foreach ($groups['form'] as $group) {
+    // Loop through each display mode including form.
+    $view_modes = array_keys($groups);
+    foreach ($view_modes as $view_mode) {
+      // Loop through each group within the display mode.
+      foreach ($groups[$view_mode] as $group) {
+        // Set the bundle (paragraph type) to be the new type machine name.
         $group->bundle = $values['target_machine_name'];
+        // Save the new group configuration
         field_group_group_save($group, $new = TRUE);
       }
     }
-   }
+  }
 
   // Define batch operation.
   $batch = array(
