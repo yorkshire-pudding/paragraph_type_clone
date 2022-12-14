@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Paragraph Type Clone cloning functions.
@@ -135,7 +134,8 @@ function paragraphs_type_clone_create_form(array $form, array &$form_state, $mac
     '#value' => t('Generate'),
   );
 
-  // Attach the admin css file so source fields can be styled to reflect read only.
+  // Attach the admin css file so source fields can be styled to reflect read
+  // only.
   $form['#attached']['css'] = array(
     backdrop_get_path('module', 'paragraphs_type_clone') . '/css/admin.css',
   );
@@ -264,7 +264,7 @@ function paragraphs_type_clone_create(array $values) {
       foreach ($groups[$view_mode] as $group) {
         // Set the bundle (paragraph type) to be the new type machine name.
         $group->bundle = $values['target_machine_name'];
-        // Save the new group configuration
+        // Save the new group configuration.
         field_group_group_save($group, $new = TRUE);
       }
     }
@@ -313,8 +313,8 @@ function paragraphs_type_clone_set_target_field($instance, $field_name, array $v
   // Progress context message.
   $context['message'] = t('Cloning field @field',
     array(
-    '@field' => $field_name,
-  )
+      '@field' => $field_name,
+    )
   );
 
   // Verify the field does not already exist.
@@ -340,7 +340,7 @@ function paragraphs_type_clone_set_target_field($instance, $field_name, array $v
  *
  * @param string $field_name
  *   The field name.
- * 
+ *
  * @return bool
  *   Number of requests.
  */
@@ -380,6 +380,7 @@ function paragraphs_type_clone_finished($success, array $results, array $operati
       t('An error occurred while processing @operation with arguments : @args',
         array(
           '@operation' => $error_operation[0],
+          // phpcs:ignore Squiz.PHP.DiscouragedFunctions -- This is used widely in debugging.
           '@args' => print_r($error_operation[0], TRUE),
         )
       )
