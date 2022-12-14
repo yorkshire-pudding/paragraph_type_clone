@@ -270,6 +270,35 @@ function paragraphs_type_clone_create(array $values) {
     }
   }
 
+  // Check if the Paragraphs Type Permissions module is enabled so we can clone
+  // permissions if they exist.
+  if (module_exists('paragraphs_bundle_permissions')) {
+    // Get all the roles defined in the site.
+    $roles = user_roles();
+    // Define the avaiable permission types for each paragraph type.
+    $permission_types = array('view', 'update', 'delete', 'create');
+    // Loop through each role on the site and get the existing permissions.
+    foreach ($roles as $role_name => $role_label) {
+      $role_permissions = user_role_permissions(array($role_name));
+      // Reset the list of target permissions for each role.
+      $target_permissions = array();
+      // Loop through the permission types to check if the source type has
+      // permissions for this action on this role.
+      foreach ($permission_types as $permission_type) {
+        // Define the source paragraph type permission to check for.
+        $permission_name = $permission_type . ' paragraph content ' . $values['source_machine_name'];
+        // Check if the role has this permission.
+        if (in_array($permission_name, $role_permissions)) {
+          // Add this to the list of target permissions to add for this role.
+          $target_permission_name = $permission_type . ' paragraph content ' . $bundle->bundle;
+          $target_permissions[$target_permission_name] = TRUE;
+        }
+      }
+      // Add all target_permissions to this role.
+      user_role_change_permissions($role_name, $target_permissions);
+    }
+  }
+
   // Define batch operation.
   $batch = array(
     'title' => t('Clone paragraph type'),
