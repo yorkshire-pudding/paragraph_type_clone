@@ -6,9 +6,9 @@ to a new type if the fields required are the same or almost the same.
 
 The name, machine name, label, description and whether or not the paragraphs
 can be unpublished from the admin interface are all configurable, whereas field
-instances and field groups (if applicable) are copied exactly.
+instances, field groups (if applicable), and permissions (if applicable) are copied exactly.
 
-The module is based on Content Type Clone but has a few differences:
+The module is inspired by Content Type Clone but has a few differences:
 - As the name says, this clones paragraph types and not content types which
 requires a slightly different form and process to work.
 - Node copying is deliberately not included as paragraphs are always within nodes.
@@ -22,7 +22,11 @@ This module requires that the following module is also enabled:
 
 - [Paragraphs](https://github.com/backdrop-contrib/paragraphs)
 
-While not required, this module supports the Field Group module and will copy all field groups to the new content type.
+While not required, this module supports:
+- the Field Group module and will copy all field groups to the new paragraph
+type.
+- the Paragraphs Type Permissions submodule (of Paragraphs) and will copy all
+permissions to the new paragraph type. 
 
 ## Installation
 - Install this module using the [official Backdrop CMS instructions](https://backdropcms.org/guide/modules).
@@ -41,7 +45,7 @@ Bugs and Feature requests should be reported in the [Issue Queue](https://github
 
 ## Credits
 - Created for Backdrop CMS by [Martin Price](https://github.com/yorkshire-pudding) - [System Horizons](https://www.systemhorizons.co.uk)
-- Derived from [Content Type Clone](https://github.com/backdrop-contrib/content_type_clone) which was ported to Backdrop and maintained
+- Inspired by [Content Type Clone](https://github.com/backdrop-contrib/content_type_clone) which was ported to Backdrop and maintained
 by [Laryn Kragt Bakker](https://github.com/laryn).
 
 ## License
